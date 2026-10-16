@@ -1,0 +1,17 @@
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Environment variables and credentials
+.env
+.env.*
+!.env.example
+
+# Node.js
+node_modules/
+dist/
+
+# macOS
+.DS_Store

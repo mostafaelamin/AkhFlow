@@ -1,0 +1,438 @@
+
+:root {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #eaf3f0;
+  background: #0b1419;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button {
+  font: inherit;
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+}
+
+.sidebar {
+  width: 255px;
+  flex-shrink: 0;
+  padding: 32px 20px;
+  background: #101d23;
+  border-right: 1px solid #22363c;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 42px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #1d4944;
+  color: #a1e8cc;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+}
+
+.brand h2 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: -0.6px;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #8fa8a7;
+}
+
+.sidebar-section,
+.eyebrow,
+.stat-label {
+  color: #81cbb1;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+.sidebar-section {
+  color: #758e91;
+  margin: 0 12px 14px;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #a9bdbd;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background: #1c3739;
+  color: #c0f4de;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 24px 10px 0;
+  border-top: 1px solid #263b40;
+}
+
+.sidebar-footer p {
+  margin: 0 0 7px;
+  color: #d4e8e1;
+  font-size: 13px;
+}
+
+.sidebar-footer span {
+  color: #789396;
+  font-size: 11px;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 30px 48px 70px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #8fa8a7;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #21353a;
+}
+
+.topbar-date {
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+.welcome-section {
+  padding: 48px 0 36px;
+}
+
+.welcome-section h1 {
+  font-size: clamp(30px, 4vw, 43px);
+  letter-spacing: -1.6px;
+  margin: 12px 0;
+  line-height: 1.15;
+}
+
+.welcome-section > p:last-child {
+  color: #94aaab;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.stat-card,
+.panel {
+  background: #13242b;
+  border: 1px solid #294047;
+  border-radius: 16px;
+}
+
+.stat-card {
+  padding: 26px;
+  min-height: 164px;
+}
+
+.stat-card h2 {
+  margin: 17px 0 8px;
+  font-size: 38px;
+  letter-spacing: -1.5px;
+}
+
+.stat-card h2 span {
+  font-size: 16px;
+  font-weight: 400;
+  color: #91aaa8;
+}
+
+.stat-card p {
+  color: #91aaa8;
+  font-size: 12px;
+  margin: 0;
+}
+
+.progress-bar {
+  height: 7px;
+  background: #2b4247;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 18px;
+}
+
+.progress-bar div {
+  height: 100%;
+  background: #7bdbb5;
+  border-radius: inherit;
+  transition: width 0.25s;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 22px;
+}
+
+.panel {
+  padding: 28px;
+}
+
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel h2 {
+  margin: 9px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.6px;
+}
+
+.panel-tag {
+  color: #a1d9c4;
+  border: 1px solid #315d54;
+  border-radius: 20px;
+  padding: 7px 11px;
+  font-size: 11px;
+}
+
+.panel-description {
+  color: #91a9a8;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 14px 0 26px;
+}
+
+.prayer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prayer-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 17px 15px;
+  color: #e7f1ee;
+  background: #1a3036;
+  border: 1px solid #2c4549;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.prayer-row:hover {
+  border-color: #73bda5;
+}
+
+.prayer-row.completed {
+  background: #1c3d38;
+  border-color: #477e69;
+}
+
+.prayer-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.prayer-number {
+  color: #7b9999;
+  font-size: 11px;
+}
+
+.prayer-status {
+  color: #8da7a4;
+  font-size: 11px;
+}
+
+.completed .prayer-status {
+  color: #94e7c2;
+}
+
+.quran-highlight {
+  background: linear-gradient(135deg, #1d4b42, #17343b);
+  border: 1px solid #326b5c;
+  padding: 28px;
+  border-radius: 13px;
+}
+
+.quran-highlight > span {
+  color: #a4e4c8;
+  font-size: 10px;
+  letter-spacing: 1.3px;
+  font-weight: 700;
+}
+
+.quran-highlight h3 {
+  font-size: 38px;
+  margin: 18px 0 8px;
+  letter-spacing: -1px;
+}
+
+.quran-highlight p {
+  color: #a7c7bc;
+  font-size: 12px;
+  margin: 0;
+}
+
+.quran-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.quran-actions button {
+  background: #89ddba;
+  color: #10241e;
+  border: none;
+  border-radius: 9px;
+  padding: 13px 18px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.quran-actions button:hover {
+  background: #b0f2d3;
+}
+
+.quran-actions .secondary-button {
+  background: #253e43;
+  color: #c3dcd5;
+}
+
+.quran-actions .secondary-button:hover {
+  background: #33535a;
+}
+
+.helper-text {
+  margin-top: 20px;
+  color: #799393;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+@media (max-width: 1000px) {
+  .main-content {
+    padding: 26px;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .brand {
+    padding-bottom: 18px;
+  }
+
+  .navigation {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .sidebar-section,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .nav-item {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .main-content {
+    padding: 20px 16px 50px;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+  }
+
+  .welcome-section {
+    padding: 30px 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    min-height: auto;
+  }
+
+  .panel {
+    padding: 20px;
+  }
+}
