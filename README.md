@@ -97,7 +97,7 @@ SQL
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
-pip install fastapi "uvicorn[standard]" "psycopg[binary]" python-dotenv
+pip install -r requirements.txt
 ```
 
 Create a `backend/.env` file containing:
@@ -118,9 +118,10 @@ The API will be available at http://127.0.0.1:8000.
 
 Interactive API documentation is available at http://127.0.0.1:8000/docs.
 
+
 ### 5. Start the frontend
 
-Open a second terminal:
+Open a second terminal and navigate to the `frontend` directory from the root of the cloned repository.
 
 ```bash
 cd frontend
