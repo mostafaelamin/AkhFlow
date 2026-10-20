@@ -5,6 +5,10 @@
 
 AkhFlow helps users track their five daily prayers and Quran reading progress through a clean, responsive dashboard.
 
+## Dashboard Preview
+
+![AkhFlow Dashboard](screenshots/dashboard.png)
+
 ## Features
 
 - **Daily Prayer Tracker:** Track completion of Fajr, Dhuhr, Asr, Maghrib, and Isha.
