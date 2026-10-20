@@ -5,8 +5,7 @@
 
 AkhFlow helps users track their five daily prayers and Quran reading progress through a clean, responsive dashboard.
 
-<img width="2852" height="1372" alt="image" src="https://github.com/user-attachments/assets/419dcfe4-9e7b-4b87-b2d9-a296685fd47d" />
-
+![AkhFlow Dashboard](screenshots/dashboard.png)
 
 ## Features
 
