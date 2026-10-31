@@ -9,6 +9,14 @@ AkhFlow helps users track their five daily prayers and Quran reading progress th
 
 ![AkhFlow Dashboard](screenshots/dashboard.png)
 
+
+**[Live Demo — Try AkhFlow](https://akh-flow.vercel.app/)**
+
+Explore the interactive AkhFlow dashboard, track daily prayers, and log Quran reading progress. The live demo saves progress locally in your browser.
+
+**Note:** The live demo is frontend-only. The full-stack implementation using FastAPI, PostgreSQL, and Docker is available in this repository.
+
+
 ## Features
 
 - **Daily Prayer Tracker:** Track completion of Fajr, Dhuhr, Asr, Maghrib, and Isha.
