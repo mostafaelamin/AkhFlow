@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-const API_URL = "http://127.0.0.1:8000";
-
 type DashboardData = {
   greeting: string;
   message: string;
@@ -17,8 +15,13 @@ type ProgressData = {
   pages_read: number;
 };
 
-// Use the local date rather than UTC so progress is
-// recorded under the correct day on your computer.
+const dashboard: DashboardData = {
+  greeting: "Assalamu Alaikum",
+  message: "Make every day meaningful.",
+  prayers: ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
+  quran_goal: 5,
+};
+
 function getTodayDate(): string {
   const now = new Date();
   const year = now.getFullYear();
@@ -28,171 +31,111 @@ function getTodayDate(): string {
   return `${year}-${month}-${day}`;
 }
 
-function App() {
-  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
-  const [apiError, setApiError] = useState("");
-  const [completedPrayers, setCompletedPrayers] = useState<string[]>([]);
-  const [pagesRead, setPagesRead] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [activityDate, setActivityDate] = useState(getTodayDate);
+function getStorageKey(date: string): string {
+  return `akhflow-demo-${date}`;
+}
 
-  useEffect(() => {
-    let cancelled = false;
+function readProgress(date: string): ProgressData {
+  const fallback: ProgressData = {
+    activity_date: date,
+    completed_prayers: [],
+    pages_read: 0,
+  };
 
-    async function loadData() {
-      setLoading(true);
-      setApiError("");
+  try {
+    const saved = localStorage.getItem(getStorageKey(date));
+    if (!saved) return fallback;
 
-      try {
-        const [dashboardResponse, progressResponse] =
-          await Promise.all([
-            fetch(`${API_URL}/api/dashboard`),
-            fetch(
-              `${API_URL}/api/progress?activity_date=${activityDate}`
-            ),
-          ]);
+    const parsed = JSON.parse(saved);
 
-        if (!dashboardResponse.ok || !progressResponse.ok) {
-          throw new Error("Unable to load dashboard data");
-        }
-
-        const dashboardData: DashboardData =
-          await dashboardResponse.json();
-
-        const progressData: ProgressData =
-          await progressResponse.json();
-
-        if (!cancelled) {
-          setDashboard(dashboardData);
-          setCompletedPrayers(progressData.completed_prayers);
-          setPagesRead(progressData.pages_read);
-        }
-      } catch {
-        if (!cancelled) {
-          setApiError(
-            "Unable to load your progress. Check that FastAPI and PostgreSQL are running."
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadData();
-
-    return () => {
-      cancelled = true;
+    return {
+      activity_date: date,
+      completed_prayers: Array.isArray(parsed.completed_prayers)
+        ? parsed.completed_prayers.filter(
+            (prayer: unknown) =>
+              typeof prayer === "string" &&
+              dashboard.prayers.includes(prayer)
+          )
+        : [],
+      pages_read:
+        typeof parsed.pages_read === "number" &&
+        Number.isFinite(parsed.pages_read)
+          ? Math.max(0, parsed.pages_read)
+          : 0,
     };
-  }, [activityDate]);
+  } catch {
+    return fallback;
+  }
+}
 
-  // Check for a new local day while the dashboard is open.
+function App() {
+  const [activityDate, setActivityDate] = useState(getTodayDate);
+  const [completedPrayers, setCompletedPrayers] = useState<string[]>(
+    () => readProgress(getTodayDate()).completed_prayers
+  );
+  const [pagesRead, setPagesRead] = useState<number>(
+    () => readProgress(getTodayDate()).pages_read
+  );
+
   useEffect(() => {
     const interval = window.setInterval(() => {
       const today = getTodayDate();
-
-      if (today !== activityDate && !saving) {
+      if (today !== activityDate) {
         setActivityDate(today);
+        const saved = readProgress(today);
+        setCompletedPrayers(saved.completed_prayers);
+        setPagesRead(saved.pages_read);
       }
     }, 30000);
 
     return () => window.clearInterval(interval);
-  }, [activityDate, saving]);
+  }, [activityDate]);
 
-  async function togglePrayer(prayer: string) {
-    if (saving || loading || apiError) return;
-
-    const nextCompleted = !completedPrayers.includes(prayer);
-
-    setSaving(true);
-    setApiError("");
+  function saveProgress(prayers: string[], pages: number) {
+    const progress: ProgressData = {
+      activity_date: activityDate,
+      completed_prayers: prayers,
+      pages_read: pages,
+    };
 
     try {
-      const response = await fetch(`${API_URL}/api/prayers`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prayer_name: prayer,
-          completed: nextCompleted,
-          activity_date: activityDate,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Unable to save prayer");
-      }
-
-      setCompletedPrayers((previous) =>
-        nextCompleted
-          ? [...previous, prayer]
-          : previous.filter((item) => item !== prayer)
+      localStorage.setItem(
+        getStorageKey(activityDate),
+        JSON.stringify(progress)
       );
     } catch {
-      setApiError(
-        "Unable to save your prayer. Please check your database connection and try again."
-      );
-    } finally {
-      setSaving(false);
+      // The dashboard remains interactive if browser storage is unavailable.
     }
   }
 
-  async function updateQuran(change: number) {
-    if (saving || loading || apiError) return;
+  function togglePrayer(prayer: string) {
+    const nextCompleted = completedPrayers.includes(prayer)
+      ? completedPrayers.filter((item) => item !== prayer)
+      : [...completedPrayers, prayer];
 
+    setCompletedPrayers(nextCompleted);
+    saveProgress(nextCompleted, pagesRead);
+  }
+
+  function updateQuran(change: number) {
     const nextPages = Math.max(0, pagesRead + change);
 
-    if (nextPages === pagesRead) return;
-
-    setSaving(true);
-    setApiError("");
-
-    try {
-      const response = await fetch(`${API_URL}/api/quran`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          pages_read: nextPages,
-          activity_date: activityDate,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Unable to save Quran progress");
-      }
-
-      setPagesRead(nextPages);
-    } catch {
-      setApiError(
-        "Unable to save your Quran progress. Please check your database connection and try again."
-      );
-    } finally {
-      setSaving(false);
-    }
+    setPagesRead(nextPages);
+    saveProgress(completedPrayers, nextPages);
   }
 
-  const prayers = dashboard?.prayers ?? [];
+  const prayers = dashboard.prayers;
 
-  const progress =
-    prayers.length > 0
-      ? Math.round(
-          (completedPrayers.length / prayers.length) * 100
-        )
-      : 0;
+  const progress = Math.round(
+    (completedPrayers.length / prayers.length) * 100
+  );
 
-  const quranGoal = dashboard?.quran_goal ?? 5;
+  const quranGoal = dashboard.quran_goal;
 
   const quranProgress = Math.min(
     100,
     Math.round((pagesRead / quranGoal) * 100)
   );
-
-  const controlsDisabled = loading || saving || Boolean(apiError);
 
   return (
     <div className="app-layout">
@@ -240,26 +183,12 @@ function App() {
           </span>
         </header>
 
-        {apiError && (
-          <div role="alert" className="helper-text">
-            <p>{apiError}</p>
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-            >
-              Retry connection
-            </button>
-          </div>
-        )}
-
         <section className="welcome-section">
           <p className="eyebrow">
-            {dashboard?.greeting.toUpperCase() ?? "LOADING..."}
+            {dashboard.greeting.toUpperCase()}
           </p>
 
-          <h1>
-            {dashboard?.message ?? "Loading your dashboard..."}
-          </h1>
+          <h1>{dashboard.message}</h1>
 
           <p>
             Stay connected to your daily prayers, Quran reading, and
@@ -271,7 +200,7 @@ function App() {
           <div className="stat-card">
             <span className="stat-label">PRAYERS COMPLETED</span>
             <h2>
-              {loading ? "..." : completedPrayers.length}
+              {completedPrayers.length}
               <span> / {prayers.length}</span>
             </h2>
             <p>Today's salah progress</p>
@@ -280,7 +209,7 @@ function App() {
           <div className="stat-card">
             <span className="stat-label">QURAN READING</span>
             <h2>
-              {loading ? "..." : pagesRead}
+              {pagesRead}
               <span> pages</span>
             </h2>
             <p>Pages read today</p>
@@ -289,7 +218,7 @@ function App() {
           <div className="stat-card">
             <span className="stat-label">DAILY PROGRESS</span>
             <h2>
-              {loading ? "..." : progress}
+              {progress}
               <span>%</span>
             </h2>
 
@@ -327,7 +256,6 @@ function App() {
                     }`}
                     onClick={() => togglePrayer(prayer)}
                     aria-pressed={completed}
-                    disabled={controlsDisabled}
                   >
                     <div className="prayer-info">
                       <span className="prayer-number">
@@ -359,7 +287,7 @@ function App() {
 
             <div className="quran-highlight">
               <span>YOUR READING PROGRESS</span>
-              <h3>{loading ? "Loading..." : `${pagesRead} pages`}</h3>
+              <h3>{pagesRead} pages</h3>
               <p>Daily goal: {quranGoal} pages</p>
 
               <div className="progress-bar">
@@ -371,7 +299,6 @@ function App() {
               <button
                 type="button"
                 onClick={() => updateQuran(1)}
-                disabled={controlsDisabled}
               >
                 + Log a page
               </button>
@@ -380,20 +307,14 @@ function App() {
                 type="button"
                 className="secondary-button"
                 onClick={() => updateQuran(-1)}
-                disabled={controlsDisabled || pagesRead === 0}
+                disabled={pagesRead === 0}
               >
                 Undo page
               </button>
             </div>
 
             <p className="helper-text" aria-live="polite">
-              {loading
-                ? "Loading your saved progress..."
-                : saving
-                ? "Saving your progress..."
-                : apiError
-                ? "Your latest change could not be saved."
-                : "Your progress is saved automatically to PostgreSQL."}
+              Your demo progress is saved automatically in this browser.
             </p>
           </div>
         </section>
